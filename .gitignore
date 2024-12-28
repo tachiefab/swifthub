@@ -1,0 +1,40 @@
+# Python cache files
+*.pyc
+*.pyo
+__pycache__/
+
+# Virtual environment
+venv/
+env/
+
+# Django secret keys
+*.env
+
+# Database files
+db.sqlite3
+
+# Static and media files
+/staticfiles/
+/media/
+
+# VS Code settings
+.vscode/
+
+# PyCharm settings
+.idea/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Node modules (if using npm/yarn for frontend)
+node_modules/
+
+# Other ignored files
+*.swp
+*.bak
+*.tmp
+*.pid

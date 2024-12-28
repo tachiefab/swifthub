@@ -1,0 +1,466 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+<div class="container-fluid">
+    <!-- Info boxes -->
+    <div class="row">
+      <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box">
+          <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">CPU Traffic</span>
+            <span class="info-box-number">
+              10
+              <small>%</small>
+            </span>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
+      <!-- /.col -->
+      <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box mb-3">
+          <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-thumbs-up"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">Likes</span>
+            <span class="info-box-number">41,410</span>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
+      <!-- /.col -->
+
+      <!-- fix for small devices only -->
+      <div class="clearfix hidden-md-up"></div>
+
+      <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box mb-3">
+          <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">Sales</span>
+            <span class="info-box-number">760</span>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
+      <!-- /.col -->
+      <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box mb-3">
+          <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">New Members</span>
+            <span class="info-box-number">2,000</span>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
+      <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+    <!-- Latest Projects -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title">Projects</h5>
+
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+
+              <button type="button" class="btn btn-tool" data-card-widget="remove">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-8">
+                
+                <!-- projects -->
+                  <!-- TABLE: LATEST Projects -->
+        <div class="card">
+          <div class="card-header border-transparent">
+            <h3 class="card-title">Latest Projects</h3>
+
+        
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table m-0">
+                <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Start Date</th>
+                  <th>Due In</th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                </tr>
+                </thead>
+                <tbody>
+                  {% for project in latest_projects %}
+                    <tr>
+                      <td><a href="./pages/examples/project-detail.html">{{ project.name }}</a></td>
+                      <td>{{ project.start_date }}</td>
+                      <td>{{ project.days_until_due }}</td>
+                      <td>{{ project.status }}</td>
+                      <td><span class="badge badge-{{ project.priority_color }}">{{ project.priority }}</span></td>
+                     
+                    </tr>
+                {% endfor %}
+
+
+                            
+                </tbody>
+              </table>
+            </div>
+            <!-- /.table-responsive -->
+          </div>
+          <!-- /.card-body -->
+          <div class="card-footer clearfix">
+           
+            <a href="./pages/examples/projects.html" class="btn btn-sm btn-secondary float-right">View All Projects</a>
+          </div>
+          <!-- /.card-footer -->
+        </div>
+        <!-- /.card -->
+                 
+              </div>
+              <!-- /.col -->
+              <div class="col-md-4">
+                <p class="text-center">
+                  <strong>Goal Completion</strong>
+                </p>
+
+
+                {% for project in latest_projects %}
+                    <div class="progress-group">
+                      {{ project.name }}
+                      <span class="float-right"><b>{{ project.progress}}</b>/100</span>
+                      <div class="progress progress-sm">
+                        <div class="progress-bar bg-{{ project.status_color }}" style="width: {{ project.progress}}%"></div>
+                      </div>
+                    </div>
+
+                {% endfor %}
+
+
+
+                <!-- /.progress-group -->
+              </div>
+              <!-- /.col -->
+            </div>
+            <!-- /.row -->
+          </div>
+         
+        </div>
+        <!-- /.card -->
+      </div>
+      <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+    
+    <!-- Latest Tasks -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title">Tasks</h5>
+
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+
+              <button type="button" class="btn btn-tool" data-card-widget="remove">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-8">
+                
+                <!-- projects -->
+                  <!-- TABLE: LATEST Projects -->
+        <div class="card">
+          <div class="card-header border-transparent">
+            <h3 class="card-title">Latest Tasks</h3>
+
+        
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table m-0">
+                <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Start Date</th>
+                  <th>Due In</th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                </tr>
+                </thead>
+                <tbody>
+                  {% for task in latest_tasks %}
+                    <tr>
+                      <td><a href="./pages/examples/project-detail.html">{{ task.name }}</a></td>
+                      <td>{{ task.start_date }}</td>
+                      <td>{{ task.days_until_due }}</td>
+                      <td>{{ task.status }}</td>
+                      <td><span class="badge badge-{{ task.priority_color }}">{{ task.priority }}</span></td>
+                     
+                    </tr>
+                {% endfor %}
+
+
+                            
+                </tbody>
+              </table>
+            </div>
+            <!-- /.table-responsive -->
+          </div>
+          <!-- /.card-body -->
+          <div class="card-footer clearfix">
+           
+            <a href="./pages/examples/projects.html" class="btn btn-sm btn-secondary float-right">View All Projects</a>
+          </div>
+          <!-- /.card-footer -->
+        </div>
+        <!-- /.card -->
+                 
+              </div>
+              <!-- /.col -->
+              <div class="col-md-4">
+                <p class="text-center">
+                  <strong>Goal Completion</strong>
+                </p>
+
+
+                {% for task in latest_tasks %}
+                    <div class="progress-group">
+                      {{ task.name }}
+                      <span class="float-right"><b>{{ task.progress}}</b>/100</span>
+                      <div class="progress progress-sm">
+                        <div class="progress-bar bg-{{ task.status_color }}" style="width: {{ task.progress}}%"></div>
+                      </div>
+                    </div>
+
+                {% endfor %}
+
+
+
+                <!-- /.progress-group -->
+              </div>
+              <!-- /.col -->
+            </div>
+            <!-- /.row -->
+          </div>
+         
+        </div>
+        <!-- /.card -->
+      </div>
+      <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+    <!-- Main row -->
+    <div class="row">
+      
+      <!-- Left col -->
+      <div class="col-md-8">
+        <!-- /.card -->
+        <div class="row">
+
+          <div class="col-md-6">
+            <!-- USERS LIST -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Latest Members</h3>
+
+                <div class="card-tools">
+                  <span class="badge badge-danger">8 New Members</span>
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body p-0">
+                <ul class="users-list clearfix">
+
+                  {% for member in  latest_members %}
+                        <li>
+                          <img src="{{ member.profile_picture_url }}" alt="User Image">
+                          <a class="users-list-name" href="#">{{ member.full_name }}</a>
+                          <span class="users-list-date">{{ member.date_joined }}</span>
+                        </li>
+                  {% endfor %}
+
+
+                  
+                </ul>
+                <!-- /.users-list -->
+              </div>
+              <!-- /.card-body -->
+              <div class="card-footer text-center">
+                <a href="./pages/examples/teams.html">View All Users</a>
+              </div>
+              <!-- /.card-footer -->
+            </div>
+            <!--/.card -->
+          </div>
+          <!-- /.col -->
+
+          <div class="col-md-6">
+            <!-- DIRECT CHAT -->
+            <div class="card direct-chat direct-chat-warning">
+              <div class="card-header">
+                <h3 class="card-title">Notifications</h3>
+
+                <div class="card-tools">
+                  <span title="3 New Messages" class="badge badge-warning">3</span>
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <!-- Conversations are loaded here -->
+                <div class="direct-chat-messages">
+
+                  <!-- notifications -->
+                  <div class="direct-chat-msg">
+                    <div class="direct-chat-infos clearfix">                        
+                      <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
+                    </div>
+                    <!-- /.notification-infos -->
+                    <img class="direct-chat-img" src="{% static "dist/img/AdminLTELogo.png" %}" alt="message user image">
+                    <!-- /.notification-img -->
+                    <div class="direct-chat-text">
+                      Is this template really for free? That's unbelievable!
+                    </div>
+                  </div> 
+                     <!--end of first notification  -->
+
+                     <!-- notifications -->
+                  <div class="direct-chat-msg">
+                    <div class="direct-chat-infos clearfix">                        
+                      <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
+                    </div>
+                    <!-- /.notification-infos -->
+                    <img class="direct-chat-img" src="{% static "dist/img/AdminLTELogo.png" %}" alt="message user image">
+                    <!-- /.notification-img -->
+                    <div class="direct-chat-text">
+                      Is this template really for free? That's unbelievable!
+                    </div>
+                  </div> 
+                     <!--end of second notification  -->
+
+                </div>
+                <!--/.direct-chat-messages-->
+              </div>
+              <!-- /.card-body -->
+              
+              <!-- /.card-footer-->
+            </div>
+            <!--/.direct-chat -->
+          </div>
+          <!-- /.col -->
+                      
+        </div>
+        
+      </div>
+      <!-- /.col -->
+
+      <div class="col-md-4">        
+
+        <!-- PRODUCT LIST -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Recently Added Tags</h3>
+
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+              <button type="button" class="btn btn-tool" data-card-widget="remove">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body p-0">
+            <ul class="products-list product-list-in-card pl-2 pr-2">
+
+              <!-- Tag Item -->
+              <li class="item">
+                <div class="product-img">
+                  <img src="dist/img/default-150x150.png" alt="Product Image" class="img-size-50">
+                </div>
+                <div class="product-info">
+                  <a href="javascript:void(0)" class="product-title">Samsung TV
+                    
+                  <span class="product-description">
+                    Samsung 32" 1080p 60Hz LED Smart HDTV.
+                  </span>
+                </div>
+              </li>
+              <!-- /.item -->
+
+                   <!-- Tag Item -->
+                   <li class="item">
+                    <div class="product-img">
+                      <img src="dist/img/default-150x150.png" alt="Product Image" class="img-size-50">
+                    </div>
+                    <div class="product-info">
+                      <a href="javascript:void(0)" class="product-title">Samsung TV
+                        
+                      <span class="product-description">
+                        LG 32" 1080p 60Hz LED Smart HDTV.
+                      </span>
+                    </div>
+                  </li>
+                  <!-- /.item -->
+             
+            </ul>
+          </div>
+          <!-- /.card-body -->
+          <div class="card-footer text-center">
+            <a href="./pages/tables/tags.html" class="uppercase">View Projects and Tasks</a>
+          </div>
+          <!-- /.card-footer -->
+        </div>
+        <!-- /.card -->
+      </div>
+      <!-- /.col -->
+    </div>
+    <!-- /.row -->
+  </div><!--/. container-fluid -->
+{% endblock %}
