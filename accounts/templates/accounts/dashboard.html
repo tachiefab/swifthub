@@ -340,7 +340,7 @@
                 <h3 class="card-title">Notifications</h3>
 
                 <div class="card-tools">
-                  <span title="3 New Messages" class="badge badge-warning">3</span>
+                  <span title="3 New Messages" class="badge badge-warning">{{ notification_count }}</span>
                   <button type="button" class="btn btn-tool" data-card-widget="collapse">
                     <i class="fas fa-minus"></i>
                   </button>
@@ -355,33 +355,21 @@
                 <!-- Conversations are loaded here -->
                 <div class="direct-chat-messages">
 
+                  {% for notification in latest_notifications %}
                   <!-- notifications -->
                   <div class="direct-chat-msg">
                     <div class="direct-chat-infos clearfix">                        
-                      <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
+                      <span class="direct-chat-timestamp float-right">{{ notification.notification_time_formatted }}</span>
                     </div>
                     <!-- /.notification-infos -->
-                    <img class="direct-chat-img" src="{% static "dist/img/AdminLTELogo.png" %}" alt="message user image">
+                    <img class="direct-chat-img" src="{{notification.actor.profile.profile_picture_url }}" alt="message user image">
                     <!-- /.notification-img -->
                     <div class="direct-chat-text">
-                      Is this template really for free? That's unbelievable!
+                      {{ notification.verb }}
                     </div>
                   </div> 
                      <!--end of first notification  -->
-
-                     <!-- notifications -->
-                  <div class="direct-chat-msg">
-                    <div class="direct-chat-infos clearfix">                        
-                      <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
-                    </div>
-                    <!-- /.notification-infos -->
-                    <img class="direct-chat-img" src="{% static "dist/img/AdminLTELogo.png" %}" alt="message user image">
-                    <!-- /.notification-img -->
-                    <div class="direct-chat-text">
-                      Is this template really for free? That's unbelievable!
-                    </div>
-                  </div> 
-                     <!--end of second notification  -->
+                     {% endfor %}
 
                 </div>
                 <!--/.direct-chat-messages-->
