@@ -2,6 +2,7 @@ from django.db import models
 import uuid
 from django.utils import timezone
 from django.contrib.auth.models import User
+from teams.models import Team
 
 STATUS_CHOICES = [
     ('To Do', 'To Do'),
@@ -16,9 +17,25 @@ PRIORITY_CHOICES = [
     ('High', 'High'),
 ]
 
+class ProjectQueryset(models.QuerySet):
+    def active(self):
+        return self.filter(active=True)
+    
+    def upcoming(self):
+        return self.filter(due_date__gte=timezone.now())
+    
+
+class ProjectManager(models.Manager):
+    def get_queryset(self):
+        return ProjectQueryset(self.model, using=self._db)
+    
+    def all(self):
+        return self.get_queryset().active().upcoming()
+
 class Project(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='projects')
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    team = models.ForeignKey(Team, related_name="projects", on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="To Do")
@@ -28,6 +45,8 @@ class Project(models.Model):
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects = ProjectManager()
 
 
     def __str__(self):

@@ -5,12 +5,22 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.timesince import timesince
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, datetime
+
+
+#profile picture location
+def profile_image_path_location(instance, filename):
+    # get todays date YYYY-MM-DD format
+    today_date = datetime.now().strftime('%Y-%m-%d')
+    #return the upload path
+    return "profile/%s/%s/%s" % (instance.user.username, today_date, filename)
+   
+
 
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    profile_picture = models.ImageField(upload_to='profile/', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to=profile_image_path_location, blank=True, null=True)
     bio = models.TextField(null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
