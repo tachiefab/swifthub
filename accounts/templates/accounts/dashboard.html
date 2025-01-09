@@ -181,7 +181,7 @@
       <div class="col-md-12">
         <div class="card">
           <div class="card-header">
-            <h5 class="card-title">Tasks</h5>
+            <h5 class="card-title">Projects</h5>
 
             <div class="card-tools">
               <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -202,7 +202,7 @@
                   <!-- TABLE: LATEST Projects -->
         <div class="card">
           <div class="card-header border-transparent">
-            <h3 class="card-title">Latest Tasks</h3>
+            <h3 class="card-title">Projects Near Due Date</h3>
 
         
           </div>
@@ -220,13 +220,13 @@
                 </tr>
                 </thead>
                 <tbody>
-                  {% for task in latest_tasks %}
+                  {% for project in projects_near_due_date %}
                     <tr>
-                      <td><a href="./pages/examples/project-detail.html">{{ task.name }}</a></td>
-                      <td>{{ task.project.team.name }}</td>
-                      <td>{{ task.days_until_due }}</td>
-                      <td>{{ task.status }}</td>
-                      <td><span class="badge badge-{{ task.priority_color }}">{{ task.priority }}</span></td>
+                      <td><a href="./pages/examples/project-detail.html">{{ project.name }}</a></td>
+                      <td>{{ project.team.name }}</td>
+                      <td>{{ project.days_until_due }}</td>
+                      <td>{{ project.status }}</td>
+                      <td><span class="badge badge-{{ project.priority_color }}">{{ project.priority }}</span></td>
                      
                     </tr>
                 {% endfor %}
@@ -255,12 +255,12 @@
                 </p>
 
 
-                {% for task in latest_tasks %}
+                {% for project in projects_near_due_date %}
                     <div class="progress-group">
-                      {{ task.name }}
-                      <span class="float-right"><b>{{ task.progress}}</b>/100</span>
+                      {{ project.name }}
+                      <span class="float-right"><b>{{ project.progress}}</b>/100</span>
                       <div class="progress progress-sm">
-                        <div class="progress-bar bg-{{ task.status_color }}" style="width: {{ task.progress}}%"></div>
+                        <div class="progress-bar bg-{{ project.status_color }}" style="width: {{ project.progress}}%"></div>
                       </div>
                     </div>
 
