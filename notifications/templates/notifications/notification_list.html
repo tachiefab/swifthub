@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-12">         
+
+        <div class="card">
+
+           <!-- The timeline -->
+           <div class="timeline timeline-inverse">
+            <!-- timeline time label -->
+            <div class="time-label">
+              <span class="bg-danger">
+               {{ notification_count }} Unread Notifications
+              </span>
+            </div>
+            <!-- /.timeline-label -->
+             
+            {% for notification in notifications %}
+            <!-- timeline item -->
+            <div>
+              <i class="fas fa-envelope bg-primary"></i>
+
+              <div class="timeline-item">
+                <span class="time"><i class="far fa-clock"></i> {{ notification.created_at}}</span>
+
+                <h3 class="timeline-header"><a href="#">{{ notification.actor.profile.full_name }}</a> sent you an notification</h3>
+
+                <div class="timeline-body">
+                  {{ notification.verb }}
+                </div>
+                <div class="timeline-footer">
+                  <a href="#" class="btn btn-primary btn-sm">Read more</a>
+                  <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                </div>
+              </div>
+            </div>
+            <!-- END timeline item -->
+            {% endfor %}
+
+
+            <div>
+              <i class="far fa-clock bg-gray"></i>
+            </div>
+          </div>
+
+          {% comment %} pagination controls {% endcomment %}
+          {% include "components/paginator.html" %}
+          <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+      </div>
+      <!-- /.col -->
+    </div>
+    <!-- /.row -->
+  </div>
+  <!-- /.container-fluid -->
+
+{% endblock %}

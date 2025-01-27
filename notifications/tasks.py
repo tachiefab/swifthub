@@ -2,7 +2,7 @@ from celery import shared_task
 from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
-from .models import Notifiction
+from .models import Notification
 from projects.models import Project
 
 
@@ -18,7 +18,7 @@ def create_notification(actor_username, verb, object_id):
         members = project.team.members.all()
 
         for recipient in members:
-            notification = Notifiction.objects.create(
+            notification = Notification.objects.create(
                 receipient=recipient,
                 actor=actor,
                 verb=verb,

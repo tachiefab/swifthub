@@ -15,7 +15,7 @@ class NotificationManager(models.Manager):
         return self.filter(read=True)
 
 
-class Notifiction(models.Model):
+class Notification(models.Model):
     receipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
     actor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="actions")
     verb = models.CharField(max_length=255)
