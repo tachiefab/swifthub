@@ -1,4 +1,5 @@
 from django.shortcuts import redirect
+from django.contrib import messages
 # from django.contrib.auth.mixins import LoginRequiredMixin
 # from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse_lazy
@@ -7,6 +8,7 @@ from django.views.generic import CreateView, ListView, DetailView
 from .models import Project
 from .forms import ProjectForm
 from comments.models import Comment
+from comments.forms import CommentForm
 
 from notifications.tasks import create_notification
 
@@ -35,12 +37,11 @@ class ProjectCreateView(CreateView):
         # send notification
         actor_username = self.request.user.username
         verb = f'New Project Assignment, {project.name}'
-        object_id = project.id
 
         create_notification.delay(
                 actor_username=actor_username,  
                 verb=verb, 
-                object_id=object_id
+                object_id=project.id
                 )      
         return redirect(self.success_url)
 
@@ -97,7 +98,7 @@ class ProjectDetailView(DetailView):
         latest_notifications = self.request.user.notifications.unread(self.request.user) 
         project = self.get_object()            
         comments =   Comment.objects.filter_by_instance(project)  
-        paginator = Paginator(comments, 1) 
+        paginator = Paginator(comments, 5) 
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
     
@@ -113,6 +114,40 @@ class ProjectDetailView(DetailView):
             deadlines are met efficiently.
         """
         context["page_obj"] = page_obj
+        context["comments_count"] = comments.count()
+        context["comment_form"] = CommentForm()
         return context
+
+    def post(self, request, *args, **kwargs):
+        project = self.get_object()
+        if request.user in project.team.members.all():
+            form = CommentForm(request.POST)
+            if form.is_valid():
+                comment = form.save(commit=False)
+                comment.user = request.user
+                comment.content_object = project
+                comment.save()
+
+                # send notification
+                actor_username = self.request.user.username
+                actor_full_name = self.request.user.profile.full_name
+                verb = f'{actor_full_name}, commented on {project.name}'
+
+                create_notification.delay(
+                        actor_username=actor_username,  
+                        verb=verb, 
+                        object_id=project.id
+                        )   
+                messages.success(request, "Your comment has been added successfully")
+                return redirect('projects:project-detail', pk=project.pk)
+            else:
+                messages.warning(request, form.errors.get("comment", ["An unknown error occured."])[0])
+        else:
+            messages.warning(request, "You are not a member of this project and you cannot comment")
+        return self.get(request, *args, **kwargs)
+            
+            
+
+
 
 

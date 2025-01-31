@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{title }} |{{block.super}}{% endblock title %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 
@@ -59,7 +60,34 @@
   <!-- comments -->      
           <div class="row">
             <div class="col-12">
-              <h4>Recent Comments</h4>
+              <h4>Recent Comments({{ comments_count }})</h4>
+            <form action="{% url "projects:project-detail" project.pk %}" method="post">
+              {% csrf_token %}
+              <div class="col-10">
+              {{ comment_form|crispy }}
+            </div>
+
+            {% comment %} button {% endcomment %}
+            <div class="row">
+              <div class="col-10">
+                <input type="submit" value="post your comment" class="btn btn-success float-left">
+              </div>
+            </div>
+            </form>
+            <br>
+            {% comment %} displaying messages {% endcomment %}
+            {% if messages %}
+            <div class="messages col-10">
+              {% for message in messages %}
+              <div class="alert {% if message.tags %}alert-{{message.tags}}{% else %}alert-info{% endif %}">
+                {{ message }}
+              </div>
+              
+              {% endfor %}
+
+            </div>
+            
+            {% endif %}
 
             {% for comment in page_obj %}
                 <div class="post">
