@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'projects',
     'tasks',
     'notifications',
-    'teams'
+    'teams',
+    'comments'
 
 ]
 

@@ -8,11 +8,11 @@ class NotificationManager(models.Manager):
     # def for_user(self, user):
     #     return self.filter(receipient=user)
     
-    def unread(self):
-        return self.filter(read=False)
+    def unread(self, user):
+        return self.filter(read=False).exclude(actor=user)
     
     def read(self):
-        return self.filter(read=True)
+        return self.filter(read=True).exclude(actor=user)
 
 
 class Notification(models.Model):
@@ -36,4 +36,8 @@ class Notification(models.Model):
     @property
     def notification_time_formatted(self):
         return self.created_at.strftime('%d %b %I %M %p')
+
+    def mark_as_read(self):
+        self.read = True
+        self.save()
     

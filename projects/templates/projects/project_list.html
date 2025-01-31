@@ -50,7 +50,7 @@
                          {{ forloop.counter }}
                       </td>
                       <td>
-                          <a href="">
+                          <a href="{% url "projects:project-detail" project.id %}">
                               {{ project.name }}
                           </a>
                           <br/>

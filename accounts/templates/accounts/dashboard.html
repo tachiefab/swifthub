@@ -116,7 +116,7 @@
                 <tbody>
                   {% for project in latest_projects %}
                     <tr>
-                      <td><a href="./pages/examples/project-detail.html">{{ project.name }}</a></td>
+                      <td><a href="{% url "projects:project-detail" project.id %}">{{ project.name }}</a></td>
                       <td>{{ project.team.name }}</td>
                       <td>{{ project.days_until_due }}</td>
                       <td>{{ project.status }}</td>
@@ -223,7 +223,7 @@
                 <tbody>
                   {% for project in projects_near_due_date %}
                     <tr>
-                      <td><a href="./pages/examples/project-detail.html">{{ project.name }}</a></td>
+                      <td><a href="{% url "projects:project-detail" project.id %}">{{ project.name }}</a></td>
                       <td>{{ project.team.name }}</td>
                       <td>{{ project.days_until_due }}</td>
                       <td>{{ project.status }}</td>

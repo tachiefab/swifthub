@@ -15,7 +15,7 @@ def create_notification(actor_username, verb, object_id):
         project = Project.objects.get(id=object_id)
 
         # get all team members
-        members = project.team.members.all()
+        members = project.team.members.exclude(id=project.owner.id)
 
         for recipient in members:
             notification = Notification.objects.create(

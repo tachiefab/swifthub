@@ -1,9 +1,12 @@
 from django.shortcuts import redirect
 # from django.contrib.auth.mixins import LoginRequiredMixin
+# from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView
+from django.core.paginator import Paginator
+from django.views.generic import CreateView, ListView, DetailView
 from .models import Project
 from .forms import ProjectForm
+from comments.models import Comment
 
 from notifications.tasks import create_notification
 
@@ -17,7 +20,7 @@ class ProjectCreateView(CreateView):
         # latest notifications
         context = super(ProjectCreateView, self).get_context_data(**kwargs)
         # if self.request.user.is_authenticated:
-        latest_notifications = self.request.user.notifications.unread()            
+        latest_notifications = self.request.user.notifications.unread(self.request.user)            
         
         context["latest_notifications"] = latest_notifications[:3]
         context["notification_count"] = latest_notifications.count()
@@ -52,7 +55,7 @@ class ProjectListView(ListView):
         # latest notifications
         context = super(ProjectListView, self).get_context_data(**kwargs)
         # if self.request.user.is_authenticated:
-        latest_notifications = self.request.user.notifications.unread()            
+        latest_notifications = self.request.user.notifications.unread(self.request.user)            
         
         context["latest_notifications"] = latest_notifications[:3]
         context["notification_count"] = latest_notifications.count()
@@ -75,7 +78,7 @@ class ProjectNearDueDateListView(ListView):
         # latest notifications
         context = super(ProjectNearDueDateListView, self).get_context_data(**kwargs)
         # if self.request.user.is_authenticated:
-        latest_notifications = self.request.user.notifications.unread()            
+        latest_notifications = self.request.user.notifications.unread(self.request.user)            
         
         context["latest_notifications"] = latest_notifications[:3]
         context["notification_count"] = latest_notifications.count()
@@ -83,5 +86,33 @@ class ProjectNearDueDateListView(ListView):
         return context
     
 
+class ProjectDetailView(DetailView):
+    model = Project
+    template_name = "projects/project_detail.html"
+    context_object_name = "project"
+
+    def get_context_data(self, **kwargs):
+        # latest notifications
+        context = super(ProjectDetailView, self).get_context_data(**kwargs)
+        latest_notifications = self.request.user.notifications.unread(self.request.user) 
+        project = self.get_object()            
+        comments =   Comment.objects.filter_by_instance(project)  
+        paginator = Paginator(comments, 1) 
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+    
+        
+        context["latest_notifications"] = latest_notifications[:3]
+        context["notification_count"] = latest_notifications.count()
+        context["header_text"] = "Project Detail"
+        context["title"] = project.name
+        context["my_company"] = "Swifthub"
+        context["my_company_description"] = """
+            Swifthub is a robust Project Management System that streamlines task tracking, 
+            team collaboration, and progress monitoring, ensuring projects stay on track and 
+            deadlines are met efficiently.
+        """
+        context["page_obj"] = page_obj
+        return context
 
 

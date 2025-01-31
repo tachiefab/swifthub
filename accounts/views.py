@@ -21,7 +21,7 @@ class DashboardView(View):
         
         context = {}
         # if request.user.is_authenticated:
-        latest_notifications = request.user.notifications.unread()
+        latest_notifications = request.user.notifications.unread(request.user)
         context["latest_notifications"] = latest_notifications[:3]
         context["notification_count"] = latest_notifications.count()
         context["latest_projects"] = latest_projects[:5]
@@ -46,7 +46,7 @@ class MembersListView(ListView):
         # latest notifications
         context = super(MembersListView, self).get_context_data(**kwargs)
         # if self.request.user.is_authenticated:
-        latest_notifications = self.request.user.notifications.unread()            
+        latest_notifications = self.request.user.notifications.unread(self.request.user)            
         
         context["latest_notifications"] = latest_notifications[:3]
         context["notification_count"] = latest_notifications.count()
