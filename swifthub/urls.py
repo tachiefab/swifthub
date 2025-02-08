@@ -25,6 +25,10 @@ urlpatterns = [
     path("projects/", include('projects.urls', namespace='projects')),
     path("notifications/", include('notifications.urls', namespace='notifications')),
 
+    # authetication
+    path('accounts/', include('django.contrib.auth.urls')),
+    
+
 
 ]
 

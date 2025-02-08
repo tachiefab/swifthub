@@ -1,16 +1,31 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
 # from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View, ListView
+from django.contrib.auth.decorators import login_not_required
 from projects.models import Project
 from tasks.models import Task
 from .models import Profile
 # from notifications.models import Notifiction 
 from teams.models import Team
+from .forms import RegisterForm
 
 
-# class DashboardView(View):
-#     def get(self, request, *args, **kwargs):
-#         return render(request, "accounts/dashboard.html")
+# user registration
+@login_not_required
+def RegisterView(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, "Registration is successful")
+            return redirect('login')
+        else:
+            messages.error(request, "Please correct the errors below")
+    else:
+        form = RegisterForm()
+
+    return render(request, 'registration/register.html', {'form':form})
 
 class DashboardView(View):
     def get(self, request, *args, **kwargs):
