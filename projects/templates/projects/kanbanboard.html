@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+{% block title %}{{title }} |{{block.super}}{% endblock title %}
+{% load static %}
+
+{% comment %} page specific css {% endcomment %}
+
+{% block page_css %}
+
+ <!-- Ekko Lightbox -->
+ <link rel="stylesheet" href="{% static "plugins/ekko-lightbox/ekko-lightbox.css" %} ">
+
+ <style>
+  .task-card {
+    cursor: grab;
+  }
+
+  .form-group {
+    display: flex;
+  }
+
+  #backlog h3 {
+    margin-right: 10px;
+  }
+
+ </style>
+{% endblock  %}
+
+{% block content %}
+
+<div class="container-fluid h-100">
+
+    <div class="card card-row card-secondary board-column" id="backlog">
+      <div class="card-header">
+        <h3 class="card-title">
+          Backlog
+        </h3>
+
+        {% comment %} Task creation form  {% endcomment %}
+        <form id="create-task-form" data-project-id="{{ project.id}}" method="POST" action="{% url "tasks:create-task-ajax" %}">
+          {% csrf_token %}
+          <div class="form-group">
+            <input type="text" id="task-name" name="name" class="form-control task-input" placeholde="New Task">
+          </div>
+        </form>
+      </div>
+      <div class="card-body task-list">
+
+        {% for task in backlog_tasks %}
+            <div class="card card-secondary card-outline task-card" data-task-id="{{ task.id}}">
+            <div class="card-header">
+                <h5 class="card-title">{{ task.name }}</h5>
+                <div class="card-tools">
+                <a href="#" class="btn btn-tool btn-link task-counter"></a>
+                <a href="#" class="btn btn-tool">
+                    <i class="fas fa-pen"></i>
+                </a>
+                </div>
+            </div>         
+            </div>
+        {% endfor %}
+
+     
+      </div>
+    </div>
+
+
+    <div class="card card-row card-primary board-column" id="to-do">
+      <div class="card-header">
+        <h3 class="card-title">
+          To Do
+        </h3>
+      </div>
+      <div class="card-body task-list">
+        {% for task in todo_tasks %}
+        <div class="card card-primary card-outline task-card" data-task-id="{{ task.id}}">
+          <div class="card-header">
+            <h5 class="card-title">{{ task.name }}</h5>
+            <div class="card-tools">
+              <a href="#" class="btn btn-tool btn-link">#{{ forloop.counter }}</a>
+              <a href="#" class="btn btn-tool">
+                <i class="fas fa-pen"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+
+    <div class="card card-row card-default board-column" id="in-progress">
+      <div class="card-header bg-info">
+        <h3 class="card-title">
+          In Progress
+        </h3>
+      </div>
+      <div class="card-body task-list">
+
+        {% for task in in_progress_tasks %}
+        <div class="card card-primary card-outline task-card" data-task-id="{{ task.id}}">
+          <div class="card-header">
+            <h5 class="card-title">{{ task.name }}</h5>
+            <div class="card-tools">
+              <a href="#" class="btn btn-tool btn-link">#{{ forloop.counter }}</a>
+              <a href="#" class="btn btn-tool">
+                <i class="fas fa-pen"></i>
+              </a>
+            </div>
+          </div>
+        
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card card-row card-success board-column" id="completed">
+      <div class="card-header">
+        <h3 class="card-title">
+          Completed
+        </h3>
+      </div>
+      <div class="card-body task-list">
+        {% for task in completed_tasks %}
+        <div class="card card-success card-outline task-card" data-task-id="{{ task.id}}">
+          <div class="card-header">
+            <h5 class="card-title">{{ task.name }}</h5>
+            <div class="card-tools">
+              <a href="#" class="btn btn-tool btn-link">#{{ forloop.counter }}</a>
+              <a href="#" class="btn btn-tool">
+                <i class="fas fa-pen"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+
+{% endblock  %}
+
+
+{% block script %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+    const taskCards = document.querySelectorAll('.task-card');
+    taskCards.forEach(card => {
+      card.draggable = true;
+
+      card.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', card.dataset.taskId);
+        console.log(card.dataset)
+      })
+    });
+
+    const columns = document.querySelectorAll('.board-column');
+    columns.forEach(column => {
+      column.addEventListener('dragover', (e) => {
+        e.preventDefault();
+
+        column.addEventListener('drop', (e) => {
+          const taskId = e.dataTransfer.getData('text/plain');
+          const taskCard = document.querySelector(`[ data-task-id="${taskId}"]`);
+
+          //get new status
+          const newStatus = column.id.replace('-', ' ');
+          
+
+          //move the task card to the new column
+          column.querySelector('.task-list').prepend(taskCard);
+
+          //update the class or color based on column
+          taskCard.classList.remove('card-primary', 'card-secondary', 'card-light', 'card-success');
+          if(column.id === 'backlog'){
+            taskCard.classList.add('card-secondary');
+          } else if (column.id === 'to-do'){
+            taskCard.classList.add('card-primary');
+          } else if ( column.id === 'in-progress'){
+            taskCard.classList.add('card-primary');
+          }else if (column.id === 'completed'){
+            taskCard.classList.add('card-success');
+
+          }
+          
+
+          //send ajax request to update task status
+          updateTaskStatus(taskId, newStatus);
+        })
+      });
+    })
+
+    //update status ajax
+    function  updateTaskStatus(taskId, newStatus) {
+      fetch(`/tasks/update-task-status-ajax/${taskId}/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: JSON.stringify({status: newStatus}),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if(data.success){
+          console.log('Task status updated successfully');
+
+        }else{
+          console.error('Error updating task status')
+        }
+      });
+    }
+
+
+    //submitting form on enter key
+    const taskForm = document.getElementById('create-task-form');
+    const taskInput = document.getElementById('task-name');
+    const projectId = taskForm.getAttribute('data-project-id');
+
+    //get backlog column
+    const backlogColumn = document.getElementById('backlog');
+
+    if (taskForm && taskInput && projectId){
+      taskInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+
+          const taskName = taskInput.value.trim();
+          if (taskName){
+            const formData = new FormData(taskForm);
+            formData.append('name', taskName);
+            formData.append('project_id', projectId);
+
+            fetch(taskForm.action, {
+              method: taskForm.method,
+              body: formData,
+              headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'X-Requested-With': 'XMLHttpRequest'
+              }
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                console.log('Task created successfully', data.task_id);
+                taskInput.value = '';
+
+                //dynamically create the new task
+                const newTaskCard = document.createElement('div');
+                newTaskCard.classList.add('card', 'card-secondary', 'card-outline', 'task-card');
+                newTaskCard.setAttribute('data-task-id', data.task_id);
+                newTaskCard.draggable = true;
+
+                //add the task content
+                newTaskCard.innerHTML = `
+                <div class="card-header">
+                <h5 class="card-title">${taskName}</h5>
+                <div class="card-tools">
+                <a href="#" class="btn btn-tool btn-link task-counter"></a>
+                <a href="#" class="btn btn-tool">
+                    <i class="fas fa-pen"></i>
+                </a>
+                </div>
+            </div>  
+                `;
+
+                //append new created task to backlog column
+                const backlogTaskList = backlogColumn.querySelector('.task-list');
+                backlogTaskList.prepend(newTaskCard);
+
+                //updating task counter
+                updateTaskCounters();
+
+                //add drag and drop listener to the newly created task
+                newTaskCard.addEventListener('dragstart', (e) => {
+                  e.dataTransfer.setData('text/plain', newTaskCard.dataset.taskId);
+                });
+
+
+
+              }else{
+                console.error('Error:', data.error);
+              }
+            })
+            .catch(error => {
+              console.error('Error creating task: ', error);
+            });
+
+
+          }else{
+            console.log('Task name is empty');
+          }         
+
+        }
+      });
+
+    }else{
+      console.error('Form, input, or project ID is not found');
+    }
+
+
+    //function to update task counters
+
+    function updateTaskCounters() {
+      const taskCards = backlogColumn.querySelectorAll('.task-card');
+      taskCards.forEach((card, index) => {
+        const taskCounter =  card.querySelector('.task-counter');
+        if(taskCounter){
+          taskCounter.textContent = `#${index + 1}`;
+        }
+      });
+    }
+
+    //calling update task counter on page load
+    updateTaskCounters();
+
+  
+
+
+  });
+
+</script>
+
+{% endblock %}

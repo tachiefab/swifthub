@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from django.views.generic import CreateView, ListView, DetailView
 from .models import Project
-from .forms import ProjectForm
+from .forms import ProjectForm, AttachmentForm
 from comments.models import Comment
 from comments.forms import CommentForm
 
@@ -116,11 +116,16 @@ class ProjectDetailView(DetailView):
         context["page_obj"] = page_obj
         context["comments_count"] = comments.count()
         context["comment_form"] = CommentForm()
+        context["attachment_form"] = AttachmentForm()
         return context
 
     def post(self, request, *args, **kwargs):
         project = self.get_object()
-        if request.user in project.team.members.all():
+        if request.user not in project.team.members.all():
+            messages.warning(request, "You are not a member of this project and you cannot comment")
+            return self.get(request, *args, **kwargs)
+
+        if 'comment_submit' in request.POST:
             form = CommentForm(request.POST)
             if form.is_valid():
                 comment = form.save(commit=False)
@@ -142,12 +147,46 @@ class ProjectDetailView(DetailView):
                 return redirect('projects:project-detail', pk=project.pk)
             else:
                 messages.warning(request, form.errors.get("comment", ["An unknown error occured."])[0])
-        else:
-            messages.warning(request, "You are not a member of this project and you cannot comment")
+        
+        if 'attachment_submit' in request.POST:
+            attachment_form = AttachmentForm(request.POST, request.FILES)
+            if attachment_form.is_valid():
+                attachment = attachment_form.save(commit=False)
+                attachment.project = project
+                attachment.user = request.user
+                attachment.save()
+                messages.success(request, "Your file has been uploaded successfully")
+                return redirect('projects:project-detail', pk=project.pk)
+            else:
+                messages.error(request, "Error uploading the file, please try again later")
+                
         return self.get(request, *args, **kwargs)
             
             
 
+class KanbanBoardView(DetailView):
+    model = Project
+    template_name = "projects/kanbanboard.html"
+    context_object_name = "project"
 
+    def get_context_data(self, **kwargs):
+        # latest notifications
+        context = super(KanbanBoardView, self).get_context_data(**kwargs)
+        latest_notifications = self.request.user.notifications.unread(self.request.user) 
+        project = self.get_object()         
+        
+        context["latest_notifications"] = latest_notifications[:3]
+        context["notification_count"] = latest_notifications.count()
+        context["header_text"] = "Kanban Board"
+        context["title"] = f"{project.name}'s Kanban Board"
+        context["is_kanban"] = True
+
+        # separate tasks by status
+        context["backlog_tasks"] = project.tasks.filter(status="Backlog").upcoming()
+        context["todo_tasks"] = project.tasks.filter(status="To Do").upcoming()
+        context["in_progress_tasks"] = project.tasks.filter(status="In Progress").upcoming()
+        context["completed_tasks"] = project.tasks.filter(status="Completed").upcoming()
+        
+        return context
 
 

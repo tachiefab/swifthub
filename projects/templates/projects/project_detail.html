@@ -50,7 +50,7 @@
 
           <br> 
           <!-- project kanban board -->
-          <a href="#" class="btn btn-sm btn-primary">View Kanban Board</a> 
+          <a href="{% url "projects:kanban-board" project.id %}" class="btn btn-sm btn-primary">View Kanban Board</a> 
            <!-- end of project kanban board -->               
               
             <br>
@@ -70,7 +70,7 @@
             {% comment %} button {% endcomment %}
             <div class="row">
               <div class="col-10">
-                <input type="submit" value="post your comment" class="btn btn-success float-left">
+                <input type="submit" name="comment_submit" value="post your comment" class="btn btn-success float-left">
               </div>
             </div>
             </form>
@@ -128,25 +128,19 @@
 
           <h5 class="mt-5 text-muted">Project files</h5>
           <ul class="list-unstyled">
+            {% for attachment in project.attachments.all %}
             <li>
-              <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i> Functional-requirements.docx</a>
+              <a href="{{ attachment.file.url }}"  target="_blank"  class="btn-link text-secondary">
+                <i class="far fa-fw fa-file"></i> {{ attachment.file.name|truncatechars:40 }}x</a>
             </li>
-            <li>
-              <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-file-pdf"></i> UAT.pdf</a>
-            </li>
-            <li>
-              <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-envelope"></i> Email-from-flatbal.mln</a>
-            </li>
-            <li>
-              <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-image "></i> Logo.png</a>
-            </li>
-            <li>
-              <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i> Contract-10_12_2014.docx</a>
-            </li>
+            {% endfor %}
+           
           </ul>
           <div class="text-center mt-5 mb-3">
-            <a href="#" class="btn btn-sm btn-primary">Add files</a>
-            <!-- <a href="#" class="btn btn-sm btn-warning">Report contact</a> -->
+            <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal-default">
+             Add files
+            </button>
+            
           </div>
         </div>
       </div>
@@ -154,5 +148,32 @@
     <!-- /.card-body -->
   </div>
   <!-- /.card -->
+
+  <div class="modal fade" id="modal-default">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Upload project files</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <form action="" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+        <div class="modal-body">
+          {{ attachment_form }}
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <input type="submit" name="attachment_submit" value="Upload file" class="btn btn-primary">
+        </div>
+      </form>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
 
 {% endblock %}
