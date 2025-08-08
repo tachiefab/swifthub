@@ -5,6 +5,9 @@ from projects.utils import STATUS_CHOICES, PRIORITY_CHOICES
 
 
 class TaskUpdateForm(forms.ModelForm):
+    # hidden input
+    task_id = forms.CharField(widget=forms.HiddenInput(), required=True)
+
     description = forms.CharField(
         widget= forms.Textarea(
             attrs={'rows': 3, 'placeholder': 'Describe your task here ...'}

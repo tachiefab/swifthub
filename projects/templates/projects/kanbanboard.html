@@ -319,9 +319,7 @@
     updateTaskCounters();
 
     //open a modal 
-    //1. target an element
-    // loop through
-
+    const taskUpdateModal = document.getElementById('taskUpdateModal');
     const editIcons = document.querySelectorAll('.fa-pen');
     let currentTaskId = null;
     editIcons.forEach(icon => {
@@ -332,10 +330,40 @@
         currentTaskId =  this.closest('.task-card').dataset.taskId;
         //alert(currentTaskId)
         //open modal now
-        $('#taskUpdateModal').modal('show');
+       //$('#taskUpdateModal').modal('show');
+
+       //make ajax reqeust to the server
+       fetch(`/tasks/${currentTaskId}/get/`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+       })
+       .then(response => response.json())
+       .then(data => {
+        if(data.error){
+          console.error('Task not found');
+        } else {
+          task = data.task_data;
+
+          //setting data into forms fields
+          taskUpdateModal.querySelector('input[name="task_id"]').value = task.id;
+          taskUpdateModal.querySelector('input[name="name"]').value = task.name;
+          taskUpdateModal.querySelector('textarea[name="description"]').value = task.description;
+          taskUpdateModal.querySelector('select[name="priority"]').value = task.priority;
+          taskUpdateModal.querySelector('input[name="start_date"]').value = task.start_date;
+          taskUpdateModal.querySelector('input[name="due_date"]').value = task.due_date;
 
 
+          //show modal
+          $('#taskUpdateModal').modal('show');
 
+
+          
+        }
+       })
+       .catch(error => console.error('Error fetching data:', error));
+       
       })
     });
 
