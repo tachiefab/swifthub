@@ -137,6 +137,8 @@
     </div>
   </div>
 
+  {% include "tasks/task_update_modal.html" %}
+
 
 {% endblock  %}
 
@@ -315,6 +317,30 @@
 
     //calling update task counter on page load
     updateTaskCounters();
+
+    //open a modal 
+    //1. target an element
+    // loop through
+
+    const editIcons = document.querySelectorAll('.fa-pen');
+    let currentTaskId = null;
+    editIcons.forEach(icon => {
+      icon.addEventListener('click', function(event){
+        event.preventDefault();
+
+        //get task id
+        currentTaskId =  this.closest('.task-card').dataset.taskId;
+        //alert(currentTaskId)
+        //open modal now
+        $('#taskUpdateModal').modal('show');
+
+
+
+      })
+    });
+
+
+
 
   
 
