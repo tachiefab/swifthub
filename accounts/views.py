@@ -29,7 +29,7 @@ def RegisterView(request):
 
 class DashboardView(View):
     def get(self, request, *args, **kwargs):
-        latest_projects = Project.objects.all()
+        latest_projects = Project.objects.for_user(request.user)
         latest_tasks = Task.objects.all()
         latest_members = Profile.objects.all()
 

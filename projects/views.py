@@ -53,6 +53,10 @@ class ProjectListView(ListView):
     template_name = "projects/project_list.html"
     paginate_by = 2
 
+    def get_queryset(self):
+        return Project.objects.for_user(self.request.user)
+    
+
     def get_context_data(self, **kwargs):
         # latest notifications
         context = super(ProjectListView, self).get_context_data(**kwargs)
@@ -74,7 +78,7 @@ class ProjectNearDueDateListView(ListView):
     paginate_by = 2
 
     def get_queryset(self):
-        return Project.objects.all().due_in_two_days_or_less()
+        return Project.objects.for_user(self.request.user).due_in_two_days_or_less()
 
     def get_context_data(self, **kwargs):
         # latest notifications

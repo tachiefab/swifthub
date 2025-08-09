@@ -20,6 +20,10 @@ class ProjectQueryset(models.QuerySet):
         two_days_from_today = today + timedelta(days=2)
         return self.active().upcoming().filter(due_date__lte=two_days_from_today)
     
+    # user and team owned projects
+    def for_user(self, user):
+        return self.filter(models.Q(owner=user) | models.Q(team__members=user)).distinct()
+    
 
 class ProjectManager(models.Manager):
     def get_queryset(self):
@@ -30,6 +34,10 @@ class ProjectManager(models.Manager):
     
     def due_in_two_days_or_less(self):
          return self.get_queryset().active().upcoming().due_in_two_days_or_less()
+    
+    def for_user(self, user):
+        return self.get_queryset().active().upcoming().for_user(user)
+
 
     
 
