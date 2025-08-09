@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<form action="." method="post">
+    {% csrf_token %}
+    {{ form }}
+
+    <input type="submit" value="Save changes" class="btn btn-success">
+    
+</form>
+
+{% endblock %}

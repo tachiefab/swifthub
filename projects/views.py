@@ -1,10 +1,8 @@
 from django.shortcuts import redirect
 from django.contrib import messages
-# from django.contrib.auth.mixins import LoginRequiredMixin
-# from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
-from django.views.generic import CreateView, ListView, DetailView, DeleteView
+from django.views.generic import CreateView, ListView, DetailView, DeleteView, UpdateView
 from .models import Project
 from .forms import ProjectForm, AttachmentForm
 from comments.models import Comment
@@ -51,7 +49,7 @@ class ProjectListView(ListView):
     model = Project
     context_object_name = "projects"
     template_name = "projects/project_list.html"
-    paginate_by = 2
+    paginate_by = 5
 
     def get_queryset(self):
         return Project.objects.for_user(self.request.user)
@@ -75,7 +73,7 @@ class ProjectNearDueDateListView(ListView):
     model = Project
     context_object_name = "projects"
     template_name = "projects/project_list.html"
-    paginate_by = 2
+    paginate_by = 5
 
     def get_queryset(self):
         return Project.objects.for_user(self.request.user).due_in_two_days_or_less()
@@ -92,6 +90,12 @@ class ProjectNearDueDateListView(ListView):
         return context
     
 
+class ProjectUpdateView(UpdateView):
+    model = Project
+    form_class = ProjectForm
+    template_name = 'projects/project_update.html'
+    success_url = reverse_lazy('projects:list')
+
 class ProjectDeleteView(DeleteView):
     model = Project
     template_name = 'projects/confirm_delete.html'
@@ -107,8 +111,18 @@ class ProjectDeleteView(DeleteView):
         context["notification_count"] = latest_notifications.count()
         context["header_text"] = "Delete Project"
         return context
+    
+    def post(self, request, *args, **kwargs):
+        # get project and check permissions
+        project = self.get_object()
 
-
+        # check permissions
+        if request.user != project.owner:
+            messages.warning(request, "You do not have permission to delete this project. You can only work on it")
+            return redirect('projects:project-detail', pk=project.pk)
+        messages.success(request, f"The project {project.name} is deleted successfully.")
+        return super().post(request, *args, **kwargs)
+    
 
 
 
