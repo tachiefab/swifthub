@@ -14,7 +14,7 @@ from notifications.tasks import create_notification
 class ProjectCreateView(CreateView):
     model = Project
     form_class = ProjectForm
-    template_name = 'projects/project_create.html'
+    template_name = 'projects/project_create_and_update.html'
     success_url = reverse_lazy("accounts:dashboard")
 
     def get_context_data(self, **kwargs):
@@ -27,6 +27,7 @@ class ProjectCreateView(CreateView):
         context["notification_count"] = latest_notifications.count()
         context["header_text"] = "Project Add"
         context["title"] = "Project Add"
+        context["button_text"] = "Create new Project"
         return context
 
     def form_valid(self, form):
@@ -93,8 +94,22 @@ class ProjectNearDueDateListView(ListView):
 class ProjectUpdateView(UpdateView):
     model = Project
     form_class = ProjectForm
-    template_name = 'projects/project_update.html'
+    template_name = 'projects/project_create_and_update.html'
     success_url = reverse_lazy('projects:list')
+
+    def get_context_data(self, **kwargs):
+        # latest notifications
+        context = super(ProjectUpdateView, self).get_context_data(**kwargs)
+        # if self.request.user.is_authenticated:
+        latest_notifications = self.request.user.notifications.unread(self.request.user)            
+        
+        context["latest_notifications"] = latest_notifications[:3]
+        context["notification_count"] = latest_notifications.count()
+        context["header_text"] = "Project Edit"
+        context["title"] = "Project Edit"
+        context["button_text"] = "Save changes"
+        return context
+
 
 class ProjectDeleteView(DeleteView):
     model = Project
