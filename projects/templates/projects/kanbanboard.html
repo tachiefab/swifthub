@@ -375,7 +375,8 @@
 
 
     //open modal
-    function openTaskModal(currentTaskId){
+    function openTaskModal(taskId){
+      currentTaskId = taskId
       //make ajax reqeust to the server
        fetch(`/tasks/${currentTaskId}/get/`, {
         method: 'GET',

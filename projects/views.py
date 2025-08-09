@@ -1,4 +1,5 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
+from django.http import Http404
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
@@ -95,7 +96,15 @@ class ProjectUpdateView(UpdateView):
     model = Project
     form_class = ProjectForm
     template_name = 'projects/project_create_and_update.html'
-    success_url = reverse_lazy('projects:list')
+
+    def get_object(self, queryset=None):
+        # get project
+        project = get_object_or_404(Project, pk=self.kwargs['pk'])
+
+        # check permission on this project
+        if project.owner != self.request.user:
+            raise Http404("Project not found.")
+        return project
 
     def get_context_data(self, **kwargs):
         # latest notifications
@@ -109,12 +118,36 @@ class ProjectUpdateView(UpdateView):
         context["title"] = "Project Edit"
         context["button_text"] = "Save changes"
         return context
+    
+    def form_valid(self, form):
+        # show message
+        messages.success(self.request, "Project updated successfully")
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        # show message
+        messages.error(self.request, "Please correct the errors and try again.")
+        return super().form_invalid(form)
+    
+    def get_success_url(self):
+        return reverse_lazy('projects:project-detail', kwars={'pk': self.object.pk})
+
+
 
 
 class ProjectDeleteView(DeleteView):
     model = Project
     template_name = 'projects/confirm_delete.html'
     success_url = reverse_lazy('projects:list')
+
+    def get_object(self, queryset=None):
+        # get project
+        project = get_object_or_404(Project, pk=self.kwargs['pk'])
+
+        # check permission on this project
+        if project.owner != self.request.user:
+            raise Http404("Project not found.")
+        return project
 
     def get_context_data(self, **kwargs):
         # latest notifications
@@ -131,10 +164,6 @@ class ProjectDeleteView(DeleteView):
         # get project and check permissions
         project = self.get_object()
 
-        # check permissions
-        if request.user != project.owner:
-            messages.warning(request, "You do not have permission to delete this project. You can only work on it")
-            return redirect('projects:project-detail', pk=project.pk)
         messages.success(request, f"The project {project.name} is deleted successfully.")
         return super().post(request, *args, **kwargs)
     
