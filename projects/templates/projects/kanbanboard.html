@@ -27,7 +27,7 @@
 
 {% block content %}
 
-<div class="container-fluid h-100">
+<div class="container-fluid h-100" id="board-container">
 
     <div class="card card-row card-secondary board-column" id="backlog">
       <div class="card-header">
@@ -359,19 +359,24 @@
 
     //open a modal 
     const taskUpdateModal = document.getElementById('taskUpdateModal');
-    const editIcons = document.querySelectorAll('.fa-pen');
     let currentTaskId = null;
-    editIcons.forEach(icon => {
-      icon.addEventListener('click', function(event){
-        event.preventDefault();
 
-        //get task id
-        currentTaskId =  this.closest('.task-card').dataset.taskId;
-        //alert(currentTaskId)
-        //open modal now
-       //$('#taskUpdateModal').modal('show');
+   // event delegation to handle clicks on the pencil
+   const kanbanBoard = document.getElementById('board-container');
+   kanbanBoard.addEventListener("click", function(event){
+    if (event.target.closest('.fa-pen')){
+      const taskCard = event.target.closest('.task-card');
+      const taskId = taskCard.getAttribute("data-task-id");
 
-       //make ajax reqeust to the server
+      //open modal here
+      openTaskModal(taskId)
+    }
+   });
+
+
+    //open modal
+    function openTaskModal(currentTaskId){
+      //make ajax reqeust to the server
        fetch(`/tasks/${currentTaskId}/get/`, {
         method: 'GET',
         headers: {
@@ -394,18 +399,12 @@
           taskUpdateModal.querySelector('input[name="start_date"]').value = task.start_date;
           taskUpdateModal.querySelector('input[name="due_date"]').value = task.due_date;
 
-
           //show modal
-          $('#taskUpdateModal').modal('show');
-
-
-          
+          $('#taskUpdateModal').modal('show');         
         }
        })
        .catch(error => console.error('Error fetching data:', error));
-       
-      })
-    });
+    }
 
 
     //updating task 
