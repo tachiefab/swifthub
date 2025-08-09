@@ -4,7 +4,7 @@ from django.contrib import messages
 # from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
-from django.views.generic import CreateView, ListView, DetailView
+from django.views.generic import CreateView, ListView, DetailView, DeleteView
 from .models import Project
 from .forms import ProjectForm, AttachmentForm
 from comments.models import Comment
@@ -91,6 +91,26 @@ class ProjectNearDueDateListView(ListView):
         context["header_text"] = "Due Projects"
         return context
     
+
+class ProjectDeleteView(DeleteView):
+    model = Project
+    template_name = 'projects/confirm_delete.html'
+    success_url = reverse_lazy('projects:list')
+
+    def get_context_data(self, **kwargs):
+        # latest notifications
+        context = super(ProjectDeleteView, self).get_context_data(**kwargs)
+        # if self.request.user.is_authenticated:
+        latest_notifications = self.request.user.notifications.unread(self.request.user)            
+        
+        context["latest_notifications"] = latest_notifications[:3]
+        context["notification_count"] = latest_notifications.count()
+        context["header_text"] = "Delete Project"
+        return context
+
+
+
+
 
 class ProjectDetailView(DetailView):
     model = Project
