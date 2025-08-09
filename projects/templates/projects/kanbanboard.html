@@ -345,6 +345,7 @@
           console.error('Task not found');
         } else {
           task = data.task_data;
+          console.log(task.priority); // debug
 
           //setting data into forms fields
           taskUpdateModal.querySelector('input[name="task_id"]').value = task.id;
@@ -366,6 +367,40 @@
        
       })
     });
+
+
+    //updating task 
+    const form = document.getElementById("taskUpdateForm");
+    form.addEventListener("submit", function(event){
+      event.preventDefault();
+      const formData = new FormData(form);
+      console.log(formData)
+
+      fetch(`/tasks/${currentTaskId}/update/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          "x-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        if(data.success){
+          document.querySelector(`.task-card[data-task-id="${currentTaskId}"] .card-title`).textContent = data.updatedTask.name;
+
+           //show modal
+          $('#taskUpdateModal').modal('hide');
+
+        }else {
+          console.error("Error updating taks:", data.error);
+        }
+      })
+      .catch(error => console.error("Error", error));
+
+      
+    });
+
+
 
 
 

@@ -1,9 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 import json
 from django.http import JsonResponse
 from .models import Task
 from projects.models import Project
+from .forms import TaskUpdateForm
 
 
 @require_POST
@@ -64,11 +65,38 @@ def get_task(request, task_id):
              "id": str(task.id),
              "name": task.name,
              "description": task.description,
+            "priority": task.priority,
              "start_date": task.start_date.isoformat() if task.start_date else "",
              "due_date": task.due_date.isoformat() if task.due_date else "",
          }
 
          return JsonResponse({"task_data": task_data})
+    
+
+def update_task(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+
+    if request.method == "POST":
+        form = TaskUpdateForm(request.POST, instance=task)
+        if form.is_valid():
+            form.save()
+
+            # return response
+            return JsonResponse({
+            'success': True,
+            'updatedTask':  {
+             "id": str(task.id),
+             "name": task.name,
+             "description": task.description,
+             "start_date": task.start_date.isoformat() if task.start_date else "",
+             "due_date": task.due_date.isoformat() if task.due_date else "",
+         }
+            })
+        else:
+            # return form errors
+            return JsonResponse({'success': False, 'error': form.errors})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
     
    
