@@ -55,7 +55,17 @@
                     <i class="fas fa-pen"></i>
                 </a>
                 </div>
-            </div>         
+            </div> 
+            
+            {% comment %} task description {% endcomment %}
+            {% if task.description %}
+             <div class="card-body">
+                <p class="card-description">
+                 {{ task.description }}
+                </p>
+              </div>            
+            {% endif %}
+
             </div>
         {% endfor %}
 
@@ -82,6 +92,16 @@
               </a>
             </div>
           </div>
+
+          {% comment %} task description {% endcomment %}
+               {% if task.description %}
+             <div class="card-body">
+                <p class="card-description">
+                 {{ task.description }}
+                </p>
+              </div>            
+            {% endif %}
+
         </div>
         {% endfor %}
       </div>
@@ -107,6 +127,15 @@
               </a>
             </div>
           </div>
+
+          {% comment %} task description {% endcomment %}
+                {% if task.description %}
+             <div class="card-body">
+                <p class="card-description">
+                 {{ task.description }}
+                </p>
+              </div>            
+            {% endif %}
         
         </div>
         {% endfor %}
@@ -131,6 +160,16 @@
               </a>
             </div>
           </div>
+
+          {% comment %} task description {% endcomment %}
+                {% if task.description %}
+             <div class="card-body">
+                <p class="card-description">
+                 {{ task.description }}
+                </p>
+              </div>            
+            {% endif %}
+
         </div>
         {% endfor %}
       </div>
@@ -387,7 +426,7 @@
       .then(data => {
         if(data.success){
           document.querySelector(`.task-card[data-task-id="${currentTaskId}"] .card-title`).textContent = data.updatedTask.name;
-
+          document.querySelector(`.task-card[data-task-id="${currentTaskId}"] .card-description`).textContent = data.updatedTask.description;
            //show modal
           $('#taskUpdateModal').modal('hide');
 
