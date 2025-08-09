@@ -425,8 +425,37 @@
       .then(response => response.json())
       .then(data => {
         if(data.success){
-          document.querySelector(`.task-card[data-task-id="${currentTaskId}"] .card-title`).textContent = data.updatedTask.name;
-          document.querySelector(`.task-card[data-task-id="${currentTaskId}"] .card-description`).textContent = data.updatedTask.description;
+        
+          //find the taskCard
+          const taskCard = document.querySelector(`.task-card[data-task-id="${currentTaskId}"]`);
+
+          //check if the card exist
+          if(taskCard){
+            taskCard.querySelector(".card-title").textContent = data.updatedTask.name;
+
+            // check if card-description exist
+            let descriptionElement = taskCard.querySelector(".card-description");
+            if(descriptionElement){
+              descriptionElement.textContent = data.updatedTask.description;
+            } else if(data.updatedTask.description){
+             
+              const cardBody = document.createElement("div");
+              cardBody.classList.add("card-body");
+              descriptionElement  = document.createElement("p");
+              descriptionElement.classList.add("card-description");
+              descriptionElement.textContent = data.updatedTask.description;
+
+              //append them to the card body
+              cardBody.appendChild(descriptionElement);
+              taskCard.appendChild(cardBody);
+            }
+
+          } else{
+            console.error("Task card not found for TaskId: ", currentTaskId);
+          }
+
+
+
            //show modal
           $('#taskUpdateModal').modal('hide');
 
